@@ -153,6 +153,17 @@ Retrieves a delivery registered in the system by its id.
 }
 ```
 
+## Getting started
+
+```
+- cp .env-example .env
+- open .env file and fill in the required environment variables
+- npm install
+- npm start
+- To make API calls you can use your browser - GET requests only - Postman or curl. In this example we're using curl:
+    - curl http://localhost:3004/deliveries/test
+```
+
 ## Contact
 Name                 | Email                              |Role  
 ---------------------|------------------------------------|-----------|
