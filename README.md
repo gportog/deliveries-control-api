@@ -95,7 +95,9 @@ Uploads a new version of a delivery to the system. This route will check if data
 
 ### GET /deliveries/:deliveryman/:date_from/:date_to
 
-Retrieves all deliveries registered in the system of a deliveryman by a period of time.
+Retrieves all deliveries registered in the system of a deliveryman by a period of time. As our database
+will be set to return 100 docs maximum by query, our API returns a bookmark to keep track of the last request,
+if it is null there is no more data to return.
 
 **Success Response:**
 
@@ -107,7 +109,10 @@ Retrieves all deliveries registered in the system of a deliveryman by a period o
 {
     success: true,
     message: "The deliveries was successfuly retrieved",
-    data: [delivery Object []]
+    data: {
+        docs: delivery Object[],
+        bookmark: string||null
+    }
 }
 ```
 
@@ -156,7 +161,7 @@ Retrieves a delivery registered in the system by its id.
 ## Getting started
 
 ```
-- cp .env-example .env
+- cp env-example .env
 - open .env file and fill in the required environment variables
 - npm install
 - npm start
