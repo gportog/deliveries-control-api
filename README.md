@@ -52,17 +52,13 @@ Uploads a new delivery to the system. This route will check if data was sent cor
 }
 ```
 
-### PUT /deliveries
+### PUT /deliveries/:_id/
 
 Uploads a new version of a delivery to the system. This route will check if data was sent correctly and save the delivery metadata into a cloudant database.
 
 **Data Params:**
 ```
 {
-    _id: string,
-    _rev: string,
-    deliveryman: string,
-    date: string,
     total: number
 }
 ```
