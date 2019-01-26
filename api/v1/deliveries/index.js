@@ -8,7 +8,7 @@ const deliveries = require('express').Router();
 deliveries.get('/:id', getById);
 deliveries.get('/:date_from/:date_to', getByDate);
 deliveries.post('/', create);
-deliveries.put('/', update);
+deliveries.put('/:_id/', update);
 
 module.exports = deliveries;
 
