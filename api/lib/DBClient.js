@@ -3,6 +3,8 @@ const Cloudant = require('@cloudant/cloudant');
 const user = process.env.CLOUDANT_USER;
 const pw = process.env.CLOUDANT_PW;
 
+const errorMessages = require('./ErrorMessages');
+
 function DBClient(db) {
     if (db && typeof db !== 'string')
         throw new Error("DBClient db parameter must be of type string, " +
@@ -31,7 +33,7 @@ DBClient.prototype.getById = function (id, options) {
 
 DBClient.prototype.search = function (obj, options) {
     if (!obj || typeof obj !== 'object')
-        throw new Error("Search function parameter must be a valid object " +
+        throw new Error("Search function parameter must be a valid object, " +
             `${typeof obj} received.`);
     if (typeof obj.selector !== 'object')
         throw new Error("selector_param must be a valid object, " +
@@ -63,7 +65,7 @@ DBClient.prototype.search = function (obj, options) {
 
 DBClient.prototype.insert = function (doc, options) {
     if (!doc || typeof doc !== 'object')
-        throw new Error(`'doc' parameter must be a valid object ` +
+        throw new Error(`'doc' parameter must be a valid object, ` +
             `${typeof doc} received.`);
     validateDB(this, options)
     const db = this._db || options.db;
@@ -92,6 +94,6 @@ function validateDB(instance, options) {
             throw new Error('This client has no default databaset set, and one was not provided.');
         if (typeof options.db !== 'string')
             throw new Error(`Wrong type for parameter 'db'. Received ` + typeof options.db
-                + `, expected 'string`);
+                + `, expected 'string'`);
     }
 }
