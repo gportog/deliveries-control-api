@@ -151,6 +151,62 @@ describe('DBClient tests setup', () => {
             })
             expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(1);
         }, jasmineTimeout)
+        it('should have a deliveryEntries object-array when passed a correct date range and a valid opt.db', async () => {
+            let date = new Date();
+            let dbInstance = new DBClient();
+            date.setDate(date.getDate() + 90);
+            let deliveryEntries = await dbInstance.search({
+                selector: {
+                    deliveryman: 'test@email.com',
+                    date: {
+                        $gte: `${this.date.getFullYear()}-${this.date.getMonth() + 1}-${this.date.getDate()}`,
+                        $lte: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+                    }
+                }
+            }, { db: 'deliveries-test' })
+            expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(1);
+        }, jasmineTimeout)
+        it('should have a deliveryEntries object-array when passed a correct date range and a valid db, fixing the incorrect fields parameter', async () => {
+            let date = new Date();
+            date.setDate(date.getDate() + 90);
+            let deliveryEntries = await this.dbInstance.search({
+                selector: {
+                    deliveryman: 'test@email.com',
+                    date: {
+                        $gte: `${this.date.getFullYear()}-${this.date.getMonth() + 1}-${this.date.getDate()}`,
+                        $lte: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+                    }
+                },
+                fields: 'test'
+            })
+            expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(1);
+        }, jasmineTimeout)
+        it('should have a defined deliveryEntry bookmark when passed an object and a valid db', async () => {
+            let date = new Date();
+            let deliveryEntry = {
+                deliveryman: 'test@email.com',
+                total: 20
+            }
+            for (let i = 1; i <= 101; i++) {
+                date.setDate(date.getDate() + 1);
+                deliveryEntry.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                let delivery = await this.dbInstance.insert(deliveryEntry);
+                delete delivery._id;
+                delete delivery._rev;
+                expect(delivery).toEqual(deliveryEntry);
+            }
+            let deliveryEntries = await this.dbInstance.search({
+                selector: {
+                    deliveryman: 'test@email.com',
+                    date: {
+                        $gte: `${this.date.getFullYear()}-${this.date.getMonth() + 1}-${this.date.getDate()}`,
+                        $lte: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+                    }
+                }
+            })
+            expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(100);
+            expect(deliveryEntries.bookmark).toBeDefined();
+        }, jasmineTimeout * 5);
         it('should have an empty deliveryEntries object-array when passed an incorrect date range and a valid db', async () => {
             let date = new Date();
             date.setDate(date.getDate() - 90);
@@ -165,6 +221,26 @@ describe('DBClient tests setup', () => {
             })
             expect(deliveryEntries.docs.length).toEqual(0);
         })
+        it('should throw an error when searching a deliveryEntry on a non existing db', async () => {
+            let errMessage;
+            let date = new Date();
+            date.setDate(date.getDate() + 90);
+            let dbInstance = new DBClient('non-existing-db');
+            try {
+                await dbInstance.search({
+                    selector: {
+                        deliveryman: 'test@email.com',
+                        date: {
+                            $gte: `${this.date.getFullYear()}-${this.date.getMonth() + 1}-${this.date.getDate()}`,
+                            $lte: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+                        }
+                    }
+                });
+            } catch (err) {
+                errMessage = err.message;
+            }
+            expect(errMessage).toEqual('Database does not exist.');
+        }, jasmineTimeout)
     })
 
     describe('DBClient.insert', () => {
