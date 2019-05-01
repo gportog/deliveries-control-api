@@ -187,7 +187,7 @@ describe('DBClient tests setup', () => {
                 deliveryman: 'test@email.com',
                 total: 20
             }
-            for (let i = 1; i <= 101; i++) {
+            for (let i = 1; i <= 150; i++) {
                 date.setDate(date.getDate() + 1);
                 deliveryEntry.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
                 let delivery = await this.dbInstance.insert(deliveryEntry);
