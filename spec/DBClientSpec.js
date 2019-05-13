@@ -181,7 +181,7 @@ describe('DBClient tests setup', () => {
             })
             expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(1);
         }, jasmineTimeout)
-        it('should have a defined deliveryEntry bookmark when passed an object and a valid db', async () => {
+        it('should have a string deliveryEntry bookmark when passed an object and a valid db', async () => {
             let date = new Date();
             let deliveryEntry = {
                 deliveryman: 'test@email.com',
@@ -197,15 +197,11 @@ describe('DBClient tests setup', () => {
             }
             let deliveryEntries = await this.dbInstance.search({
                 selector: {
-                    deliveryman: 'test@email.com',
-                    date: {
-                        $gte: `${this.date.getFullYear()}-${this.date.getMonth() + 1}-${this.date.getDate()}`,
-                        $lte: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-                    }
+                    deliveryman: 'test@email.com'
                 }
             })
             expect(deliveryEntries.docs.length).toBeGreaterThanOrEqual(100);
-            expect(deliveryEntries.bookmark).toBeDefined();
+            expect(typeof deliveryEntries.bookmark).toBe('string');
         }, jasmineTimeout * 5);
         it('should have an empty deliveryEntries object-array when passed an incorrect date range and a valid db', async () => {
             let date = new Date();
