@@ -12,7 +12,10 @@ instrumentation:
     complete-copy: false
     save-baseline: false
     baseline-file: ./coverage/coverage-baseline.json
-    include-all-sources: true
+    include-all-sources: false
+    include: [
+        "deliveries-control-api/api/lib"
+    ]
     include-pid: false
     es-modules: false
 reporting:
@@ -47,8 +50,8 @@ check:
         functions: 0
         excludes: []
     each:
-        statements: 0
-        lines: 0
-        branches: 0
-        functions: 0
+        statements: 90
+        lines: 90
+        branches: 90
+        functions: 100
         excludes: []
