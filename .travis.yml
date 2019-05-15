@@ -1,0 +1,34 @@
+language: node_js
+node_js:
+- "8"
+sudo: required
+dist: trusty
+
+env:
+  global:
+    - APP_NAME=deliveries-control
+    - APP_VERSION="$(git log -n 1 --pretty=format:%h -- .)$RANDOM"
+    - CF_USER="apikey"
+    - CF_TARGET="https://api.ng.bluemix.net"
+    - NUMBER_INSTANCES: 1
+    - MEMORY_SIZE: 256M
+
+before_install:
+  - chmod +x deployCloudFoundry.sh
+
+install:
+  - npm i
+
+script:
+  - istanbul cover ./node_modules/jasmine/bin/jasmine.js
+  - istanbul check-coverage
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: ./deployCloudFoundry.sh prod
+    on:
+      repo: gportog/deliveries-control-api
+      type: push
+      branch:
+        - master

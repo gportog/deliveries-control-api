@@ -18,7 +18,7 @@ describe('DBClient tests setup', () => {
         const user = process.env.CLOUDANT_USER;
         const pw = process.env.CLOUDANT_PW;
         this.date = new Date();
-        this._client = Cloudant({ account: user, password: pw, plugins: 'promises' });
+        this._client = Cloudant({ account: user, password: pw, plugins: ['retry', 'promises'] });
         this.dbInstance = new DBClient('deliveries-test');
         this.deliveryEntry = {
             _id: 'test',
@@ -39,13 +39,13 @@ describe('DBClient tests setup', () => {
         delete checkMenu._rev;
         delete checkMenu.statusCode;
         expect(checkMenu).toEqual(this.deliveryEntry);
-    }, jasmineTimeout)
+    }, jasmineTimeout * 5)
 
     afterEach(async () => {
         await this._client.db.destroy('deliveries-test');
         let listDbs = await this._client.db.list();
         expect(listDbs.includes('deliveries-test')).toBe(false);
-    }, jasmineTimeout);
+    }, jasmineTimeout * 5);
 
     /**
      * Specs:
@@ -55,16 +55,16 @@ describe('DBClient tests setup', () => {
         it('should throw an error when db param is different than undefined/string', () => {
             expect(function () { new DBClient(1); })
                 .toThrowError('DBClient db parameter must be of type string, number received.');
-        });
+        }, jasmineTimeout);
         it('should have a null value for _db when db param is empty', () => {
             let dbInstance = new DBClient();
             expect(dbInstance._db).toBeNull();
             expect(typeof dbInstance._client).toBe('object');
-        });
+        }, jasmineTimeout);
         it('should have a string value for _db when db param is string', () => {
             expect(typeof this.dbInstance._db).toBe('string');
             expect(typeof this.dbInstance._client).toBe('object');
-        });
+        }, jasmineTimeout);
     })
 
     describe('DBClient.getById', () => {
@@ -73,7 +73,7 @@ describe('DBClient tests setup', () => {
             let _id = 'test';
             expect(function () { dbInstance.getById(_id); })
                 .toThrowError('This client has no default databaset set, and one was not provided.');
-        });
+        }, jasmineTimeout);
         it('should throw a TYPE_MISMATCH_ERROR error when id param is different than string', async () => {
             let errMessage;
             try {
@@ -82,7 +82,7 @@ describe('DBClient tests setup', () => {
                 errMessage = err.message;
             }
             expect(errMessage).toBe(errorMessages.TYPE_MISMATCH_ERROR('id', 'string', typeof 1));
-        });
+        }, jasmineTimeout);
         it('should have a valid deliveryEntry object when passed a valid id and a valid db', async () => {
             let _id = 'test';
             let delivery = await this.dbInstance.getById(_id);
@@ -127,7 +127,7 @@ describe('DBClient tests setup', () => {
                 errMessage = err.message
             }
             expect(errMessage).toBe('Search function parameter must be a valid object, number received.')
-        })
+        }, jasmineTimeout)
         it('should throw a error when obj.selector param is different than object', async () => {
             let errMessage;
             try {
@@ -136,7 +136,7 @@ describe('DBClient tests setup', () => {
                 errMessage = err.message
             }
             expect(errMessage).toBe('selector_param must be a valid object, number received.')
-        })
+        }, jasmineTimeout)
         it('should have a deliveryEntries object-array when passed a correct date range and a valid db', async () => {
             let date = new Date();
             date.setDate(date.getDate() + 90);
@@ -216,7 +216,7 @@ describe('DBClient tests setup', () => {
                 }
             })
             expect(deliveryEntries.docs.length).toEqual(0);
-        })
+        }, jasmineTimeout)
         it('should throw an error when searching a deliveryEntry on a non existing db', async () => {
             let errMessage;
             let date = new Date();
@@ -248,7 +248,7 @@ describe('DBClient tests setup', () => {
                 errMessage = err.message
             }
             expect(errMessage).toBe(`'doc' parameter must be a valid object, number received.`)
-        })
+        }, jasmineTimeout)
         it('should have a valid deliveryEntry object when passed an object and a valid db', async () => {
             let date = new Date();
             date.setDate(date.getDate() + 1);
@@ -304,7 +304,7 @@ describe('DBClient tests setup', () => {
                 errMessage = err.message
             }
             expect(errMessage).toBe(`'doc' parameter must be a valid object, number received.`)
-        })
+        }, jasmineTimeout)
         it('should update a deliveryEntry object when passed an object and a valid db', async () => {
             let _id = 'test';
             let deliveryEntry = await this.dbInstance.getById(_id);
