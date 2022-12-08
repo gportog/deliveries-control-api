@@ -21,9 +21,9 @@
   "homepage": "https://github.com/gportog/deliveries-control-api#readme",
   "dependencies": {
     "@cloudant/cloudant": "^3.0.2",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.20.1",
     "dotenv": "^6.2.0",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0"
